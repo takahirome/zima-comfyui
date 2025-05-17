@@ -1,7 +1,7 @@
-name: icewhale-stable-diffusion-webui-forge
+name: icewhale-sd-forge
 services:
-  icewhale-stable-diffusion-webui-forge:
-    container_name: icewhale-stable-diffusion-webui-forge
+  icewhale-sd-forge:
+    container_name: icewhale-sd-forge
     deploy:
       resources:
         reservations:
@@ -19,7 +19,7 @@ services:
     image: ghcr.io/yummiii/sd-webui-forge-docker:cuda-12.4.1
     ipc: host
     labels:
-      icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/StableDiffusionWebUI/icon.png
+      icon: https://user-images.githubusercontent.com/36368048/196056941-aace0837-473a-4aa5-9067-505b17797aa1.png
     ports:
       - target: 7860
         published: "7860"
@@ -49,17 +49,17 @@ x-casaos:
       Diffusion是一种基于扩散技术的深度学习文本到图像模型，于2022年发布。它主要用于根据文本描述生成详细的图像，但也可以应用于其他任务，例如修复、修复和根据文本提示生成图像到图像的转换。
     ja_jp: Stable Diffusionは、2022年に拡散技術に基づいてリリースされたディープラーニングテキストからイメージへのモデルです。テキストの説明に基づいて詳細な画像を生成するために主に使用されますが、他のタスクにも適用できます。
   developer: stability.ai
-  icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/StableDiffusionWebUI/icon.png
+  icon: https://user-images.githubusercontent.com/36368048/196056941-aace0837-473a-4aa5-9067-505b17797aa1.png
   index: /
   is_uncontrolled: false
-  main: icewhale-stable-diffusion-webui
+  main: icewhale-sd-forge
   port_map: "7860"
   scheme: http
   screenshot_link:
     - https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/StableDiffusionWebUI/screenshot-1.jpg
     - https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/StableDiffusionWebUI/screenshot-2.png
     - https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/StableDiffusionWebUI/screenshot-3.webp
-  store_app_id: icewhale-stable-diffusion-webui
+  store_app_id: icewhale-sd-forge
   tagline:
     en_us: An AI model used to generate images conditioned on text descriptions.
     zh_cn: 用于根据文本描述生成图像的AI模型。
