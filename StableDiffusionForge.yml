@@ -29,6 +29,7 @@ services:
     volumes:
       - type: bind
         source: /DATA/Storage/Stable-Diffusion-WebUI-Forge/
+        target: /home/runner
     devices: []
     cap_add: []
     command: []
