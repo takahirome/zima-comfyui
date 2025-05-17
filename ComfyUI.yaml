@@ -1,0 +1,61 @@
+name: icewhale-comfyui
+services:
+  icewhale-comfyui:
+    container_name: icewhale-comfyui
+    deploy:
+      resources:
+        reservations:
+          memory: "536870912"
+        limits:
+          memory: 15744M
+    environment:
+      - CPU_FALLBACK=true
+      - NVIDIA_VISIBLE_DEVICES=all
+    image: yanwk/comfyui-boot:latest
+    ipc: host
+    labels:
+      icon: https://pbs.twimg.com/profile_images/1919720314952368128/eVGz7f4Q_400x400.jpg
+    ports:
+      - target: 8188
+        published: "8188"
+        protocol: tcp
+    restart: unless-stopped
+    runtime: nvidia
+    volumes:
+      - type: bind
+        source: /DATA/AppData/ComfyUI
+        target: /home/runner/ComfyUI
+    devices: []
+    cap_add: []
+    command: []
+    network_mode: bridge
+    privileged: false
+    cpu_shares: 90
+x-casaos:
+  architectures:
+    - amd64
+  category: Developer
+  description:
+    en_us: ComfyUI is a powerful and modular stable diffusion GUI with a graph/nodes interface. It gives users more control over the stable diffusion process and allows creating custom workflows, among other things.
+    zh_cn: ComfyUI是一个强大且模块化的稳定扩散图形用户界面，带有图形/节点界面。它让用户对稳定扩散过程有更多控制，并允许创建自定义工作流程，以及其他功能。
+    ja_jp: ComfyUIは、グラフ/ノードインターフェースを備えた強力でモジュール式のStable Diffusion用GUIです。ユーザーにより多くの制御とカスタムワークフローの作成を可能にします。
+  developer: comfyanonymous
+  icon: https://pbs.twimg.com/profile_images/1919720314952368128/eVGz7f4Q_400x400.jpg
+  index: /
+  is_uncontrolled: false
+  main: icewhale-comfyui
+  port_map: "8188"
+  scheme: http
+  screenshot_link:
+    - https://private-user-images.githubusercontent.com/20929282/387336446-7ccaf2c1-9b72-41ae-9a89-5688c94b7abe.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NDc0NTU5NzYsIm5iZiI6MTc0NzQ1NTY3NiwicGF0aCI6Ii8yMDkyOTI4Mi8zODczMzY0NDYtN2NjYWYyYzEtOWI3Mi00MWFlLTlhODktNTY4OGM5NGI3YWJlLnBuZz9YLUFtei1BbGdvcml0aG09QVdTNC1ITUFDLVNIQTI1NiZYLUFtei1DcmVkZW50aWFsPUFLSUFWQ09EWUxTQTUzUFFLNFpBJTJGMjAyNTA1MTclMkZ1cy1lYXN0LTElMkZzMyUyRmF3czRfcmVxdWVzdCZYLUFtei1EYXRlPTIwMjUwNTE3VDA0MjExNlomWC1BbXotRXhwaXJlcz0zMDAmWC1BbXotU2lnbmF0dXJlPWVhNWQwZjY4YTJjZDlhMTYzNjYyMDk4OTc0MGE4ZGQwNmZiZDM1YzA1MGZmMTA0NGZjYmU0YTJhNmIwNmFlNjAmWC1BbXotU2lnbmVkSGVhZGVycz1ob3N0In0.denumWBt6SmPWip1fWPH7_XjFYfyraWRZn6Px_E25-o
+  store_app_id: icewhale-comfyui
+  tagline:
+    en_us: A powerful and modular Stable Diffusion GUI and backend with a graph/nodes interface.
+    zh_cn: 一个强大且模块化的稳定扩散图形用户界面和后端，带有图形/节点界面。
+    ja_jp: グラフ/ノードインターフェースを備えた強力でモジュール式のStable Diffusion用GUIおよびバックエンド。
+  title:
+    en_us: ComfyUI
+    custom: ""
+    ja_jp: ComfyUI
+  hostname: ""
+  author: self 

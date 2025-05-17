@@ -1,0 +1,74 @@
+name: icewhale-stable-diffusion-webui
+services:
+  icewhale-stable-diffusion-webui:
+    container_name: icewhale-stable-diffusion-webui
+    deploy:
+      resources:
+        reservations:
+          memory: "536870912"
+        limits:
+          memory: 15744M
+    environment:
+      - CPU_FALLBACK=true
+      - NVIDIA_VISIBLE_DEVICES=all
+    image: johnguan/stable-diffusion-webui:latest
+    ipc: host
+    labels:
+      icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/StableDiffusionWebUI/icon.png
+    ports:
+      - target: 7860
+        published: "7860"
+        protocol: tcp
+    restart: unless-stopped
+    runtime: nvidia
+    volumes:
+      - type: bind
+        source: /DATA/AppData/Stable-Diffusion-WebUI/models
+        target: /data/models
+      - type: bind
+        source: /DATA/AppData/Stable-Diffusion-WebUI/outputs
+        target: /data/outputs
+      - type: bind
+        source: /DATA/AppData/Stable-Diffusion-WebUI/config
+        target: /data/config
+    devices: []
+    cap_add: []
+    command: []
+    network_mode: bridge
+    privileged: false
+    cpu_shares: 90
+x-casaos:
+  architectures:
+    - amd64
+  category: Developer
+  description:
+    en_us: Stable Diffusion is a deep learning, text-to-image model released in 2022
+      based on diffusion techniques. It is primarily used to generate detailed
+      images conditioned on text descriptions, though it can also be applied to
+      other tasks such as inpainting, outpainting, and generating image-to-image
+      translations guided by a text prompt.
+    zh_cn: Stable
+      Diffusion是一种基于扩散技术的深度学习文本到图像模型，于2022年发布。它主要用于根据文本描述生成详细的图像，但也可以应用于其他任务，例如修复、修复和根据文本提示生成图像到图像的转换。
+    ja_jp: Stable Diffusionは、2022年に拡散技術に基づいてリリースされたディープラーニングテキストからイメージへのモデルです。テキストの説明に基づいて詳細な画像を生成するために主に使用されますが、他のタスクにも適用できます。
+  developer: stability.ai
+  icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/StableDiffusionWebUI/icon.png
+  index: /
+  is_uncontrolled: false
+  main: icewhale-stable-diffusion-webui
+  port_map: "7860"
+  scheme: http
+  screenshot_link:
+    - https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/StableDiffusionWebUI/screenshot-1.jpg
+    - https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/StableDiffusionWebUI/screenshot-2.png
+    - https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/StableDiffusionWebUI/screenshot-3.webp
+  store_app_id: icewhale-stable-diffusion-webui
+  tagline:
+    en_us: An AI model used to generate images conditioned on text descriptions.
+    zh_cn: 用于根据文本描述生成图像的AI模型。
+    ja_jp: テキストの説明に基づいて画像を生成するために使用されるAIモデル。
+  title:
+    en_us: Stable Diffusion
+    custom: ""
+    ja_jp: Stable Diffusion
+  hostname: ""
+  author: self
