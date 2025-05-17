@@ -19,7 +19,7 @@ services:
     image: ghcr.io/yummiii/sd-webui-forge-docker:cuda-12.4.1
     ipc: host
     labels:
-      icon: https://user-images.githubusercontent.com/36368048/196056941-aace0837-473a-4aa5-9067-505b17797aa1.png
+      icon: https://user-images.githubusercontent.com/36368048/196056945-d9c4af6a-86dd-4d2d-b36f-eca41e2eb5d3.png
     ports:
       - target: 7860
         published: "7860"
@@ -50,7 +50,7 @@ x-casaos:
       Diffusion是一种基于扩散技术的深度学习文本到图像模型，于2022年发布。它主要用于根据文本描述生成详细的图像，但也可以应用于其他任务，例如修复、修复和根据文本提示生成图像到图像的转换。
     ja_jp: Stable Diffusionは、2022年に拡散技術に基づいてリリースされたディープラーニングテキストからイメージへのモデルです。テキストの説明に基づいて詳細な画像を生成するために主に使用されますが、他のタスクにも適用できます。
   developer: stability.ai
-  icon: https://user-images.githubusercontent.com/36368048/196056941-aace0837-473a-4aa5-9067-505b17797aa1.png
+  icon: https://user-images.githubusercontent.com/36368048/196056945-d9c4af6a-86dd-4d2d-b36f-eca41e2eb5d3.png
   index: /
   is_uncontrolled: false
   main: icewhale-sd-forge
