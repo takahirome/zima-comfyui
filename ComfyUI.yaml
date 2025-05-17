@@ -23,8 +23,8 @@ services:
     runtime: nvidia
     volumes:
       - type: bind
-        source: /DATA/AppData/ComfyUI
-        target: /home/runner/ComfyUI
+        source: /DATA/AppData/Storage
+        target: /home/runner
     devices: []
     cap_add: []
     command: []
