@@ -1,7 +1,7 @@
-name: icewhale-stable-diffusion-webui
+name: icewhale-stable-diffusion-webui-forge
 services:
-  icewhale-stable-diffusion-webui:
-    container_name: icewhale-stable-diffusion-webui
+  icewhale-stable-diffusion-webui-forge:
+    container_name: icewhale-stable-diffusion-webui-forge
     deploy:
       resources:
         reservations:
@@ -11,7 +11,12 @@ services:
     environment:
       - CPU_FALLBACK=true
       - NVIDIA_VISIBLE_DEVICES=all
-    image: johnguan/stable-diffusion-webui:latest
+      - ARGS=--listen --enable-insecure-extension-access # Insecure extension access is required if you want to install extensions with the listen flag
+      - UI=forge # Specifies the UI that will be downloaded, forge for the forge webui or auto for the AUTOMATIC1111 webui
+      # - CIVITAI_TOKEN=your_civitai_token
+      # - HF_TOKEN=your_huggingface_token
+      # - FORGE_REF=main
+    image: ghcr.io/yummiii/sd-webui-forge-docker:cuda-12.4.1
     ipc: host
     labels:
       icon: https://cdn.jsdelivr.net/gh/IceWhaleTech/CasaOS-AppStore@main/Apps/StableDiffusionWebUI/icon.png
@@ -23,14 +28,7 @@ services:
     runtime: nvidia
     volumes:
       - type: bind
-        source: /DATA/AppData/Stable-Diffusion-WebUI/models
-        target: /data/models
-      - type: bind
-        source: /DATA/AppData/Stable-Diffusion-WebUI/outputs
-        target: /data/outputs
-      - type: bind
-        source: /DATA/AppData/Stable-Diffusion-WebUI/config
-        target: /data/config
+        source: /DATA/Storage/Stable-Diffusion-WebUI-Forge/
     devices: []
     cap_add: []
     command: []
