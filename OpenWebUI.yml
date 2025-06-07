@@ -1,0 +1,62 @@
+name: icewhale-open-webui
+services:
+  icewhale-open-webui:
+    container_name: icewhale-open-webui
+    deploy:
+      resources:
+        reservations:
+          memory: "536870912"
+        limits:
+          memory: 8192M
+    environment:
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - WEBUI_SECRET_KEY=
+    image: ghcr.io/open-webui/open-webui:main
+    labels:
+      icon: https://raw.githubusercontent.com/open-webui/open-webui/main/static/favicon.png
+    ports:
+      - target: 8080
+        published: "3000"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: /DATA/AppData/OpenWebUI
+        target: /app/backend/data
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    devices: []
+    cap_add: []
+    command: []
+    network_mode: bridge
+    privileged: false
+    cpu_shares: 90
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  category: AI
+  description:
+    en_us: Open WebUI is an extensible, feature-rich, and user-friendly self-hosted WebUI designed to operate entirely offline. It supports various LLM runners, including Ollama and OpenAI-compatible APIs.
+    zh_cn: Open WebUI是一个可扩展、功能丰富且用户友好的自托管WebUI，设计为完全离线运行。它支持各种LLM运行器，包括Ollama和OpenAI兼容的API。
+    ja_jp: Open WebUIは、完全にオフラインで動作するように設計された、拡張可能で機能豊富、ユーザーフレンドリーなセルフホスト型WebUIです。OllamaやOpenAI互換APIなど、様々なLLMランナーをサポートしています。
+  developer: open-webui
+  icon: https://raw.githubusercontent.com/open-webui/open-webui/main/static/favicon.png
+  index: /
+  is_uncontrolled: false
+  main: icewhale-open-webui
+  port_map: "3000"
+  scheme: http
+  screenshot_link:
+    - https://github.com/open-webui/open-webui/assets/1060110/ef351343-82d4-4520-a0b8-8e4b86dcb931
+  store_app_id: icewhale-open-webui
+  tagline:
+    en_us: User-friendly WebUI for LLMs (Formerly Ollama WebUI)
+    zh_cn: 用户友好的LLM WebUI（原Ollama WebUI）
+    ja_jp: LLM用のユーザーフレンドリーなWebUI（旧Ollama WebUI）
+  title:
+    en_us: Open WebUI
+    custom: ""
+    ja_jp: Open WebUI
+  hostname: ""
+  author: self 

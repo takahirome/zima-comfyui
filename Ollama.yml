@@ -1,0 +1,61 @@
+name: icewhale-ollama
+services:
+  icewhale-ollama:
+    container_name: icewhale-ollama
+    deploy:
+      resources:
+        reservations:
+          memory: "1073741824"
+        limits:
+          memory: 16384M
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+    image: ollama/ollama:latest
+    ipc: host
+    labels:
+      icon: https://avatars.githubusercontent.com/u/151674099?s=400&v=4
+    ports:
+      - target: 11434
+        published: "11434"
+        protocol: tcp
+    restart: unless-stopped
+    runtime: nvidia
+    volumes:
+      - type: bind
+        source: /DATA/AppData/Ollama
+        target: /root/.ollama
+    devices: []
+    cap_add: []
+    command: []
+    network_mode: bridge
+    privileged: false
+    cpu_shares: 90
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  category: AI
+  description:
+    en_us: Ollama is a tool to run large language models locally. It supports various models like Llama 2, Mistral, and more, providing an easy way to get up and running with LLMs.
+    zh_cn: Ollama是一个在本地运行大型语言模型的工具。它支持Llama 2、Mistral等各种模型，提供了一种简单的方式来启动和运行LLM。
+    ja_jp: Ollamaは大規模言語モデルをローカルで実行するためのツールです。Llama 2、Mistralなど様々なモデルをサポートし、LLMの起動と実行を簡単にします。
+  developer: ollama
+  icon: https://avatars.githubusercontent.com/u/151674099?s=400&v=4
+  index: /
+  is_uncontrolled: false
+  main: icewhale-ollama
+  port_map: "11434"
+  scheme: http
+  screenshot_link:
+    - https://github.com/ollama/ollama/assets/3325447/0d0b44e2-8f4a-4e99-9b52-a5c1c741c8f7
+  store_app_id: icewhale-ollama
+  tagline:
+    en_us: Get up and running with large language models locally
+    zh_cn: 在本地启动和运行大型语言模型
+    ja_jp: 大規模言語モデルをローカルで起動・実行
+  title:
+    en_us: Ollama
+    custom: ""
+    ja_jp: Ollama
+  hostname: ""
+  author: self 
