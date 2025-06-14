@@ -1,0 +1,235 @@
+name: Dify
+services:
+  icewhale-dify-api:
+    container_name: icewhale-dify-api
+    image: langgenius/dify-api:0.15.3
+    deploy:
+      resources:
+        reservations:
+          memory: "1073741824"
+        limits:
+          memory: 8192M
+    environment:
+      - MODE=api
+      - LOG_LEVEL=INFO
+      - SECRET_KEY=sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=difyai123456
+      - DB_HOST=icewhale-dify-db
+      - DB_PORT=5432
+      - DB_DATABASE=dify
+      - REDIS_HOST=icewhale-dify-redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=difyai123456
+      - REDIS_DB=0
+      - CELERY_BROKER_URL=redis://:difyai123456@icewhale-dify-redis:6379/1
+      - VECTOR_STORE=weaviate
+      - WEAVIATE_ENDPOINT=http://icewhale-dify-weaviate:8080
+      - WEAVIATE_API_KEY=WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
+      - CODE_EXECUTION_ENDPOINT=http://icewhale-dify-sandbox:8194
+      - CODE_EXECUTION_API_KEY=dify-sandbox
+      - MIGRATION_ENABLED=true
+      - WEB_API_CORS_ALLOW_ORIGINS=*
+      - CONSOLE_CORS_ALLOW_ORIGINS=*
+      - STORAGE_TYPE=local
+      - STORAGE_LOCAL_PATH=storage
+    volumes:
+      - type: bind
+        source: /DATA/AppData/Dify/storage
+        target: /app/api/storage
+    depends_on:
+      - icewhale-dify-db
+      - icewhale-dify-redis
+      - icewhale-dify-weaviate
+    restart: unless-stopped
+    network_mode: bridge
+
+  icewhale-dify-worker:
+    container_name: icewhale-dify-worker
+    image: langgenius/dify-api:0.15.3
+    deploy:
+      resources:
+        reservations:
+          memory: "1073741824"
+        limits:
+          memory: 4096M
+    environment:
+      - MODE=worker
+      - LOG_LEVEL=INFO
+      - SECRET_KEY=sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=difyai123456
+      - DB_HOST=icewhale-dify-db
+      - DB_PORT=5432
+      - DB_DATABASE=dify
+      - REDIS_HOST=icewhale-dify-redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=difyai123456
+      - REDIS_DB=0
+      - CELERY_BROKER_URL=redis://:difyai123456@icewhale-dify-redis:6379/1
+      - VECTOR_STORE=weaviate
+      - WEAVIATE_ENDPOINT=http://icewhale-dify-weaviate:8080
+      - WEAVIATE_API_KEY=WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
+      - STORAGE_TYPE=local
+      - STORAGE_LOCAL_PATH=storage
+    volumes:
+      - type: bind
+        source: /DATA/AppData/Dify/storage
+        target: /app/api/storage
+    depends_on:
+      - icewhale-dify-db
+      - icewhale-dify-redis
+      - icewhale-dify-weaviate
+    restart: unless-stopped
+    network_mode: bridge
+
+  icewhale-dify-web:
+    container_name: icewhale-dify-web
+    image: langgenius/dify-web:0.15.3
+    deploy:
+      resources:
+        reservations:
+          memory: "536870912"
+        limits:
+          memory: 2048M
+    environment:
+      - CONSOLE_API_URL=
+      - APP_API_URL=
+    restart: unless-stopped
+    network_mode: bridge
+
+  icewhale-dify-db:
+    container_name: icewhale-dify-db
+    image: postgres:15-alpine
+    deploy:
+      resources:
+        reservations:
+          memory: "536870912"
+        limits:
+          memory: 2048M
+    environment:
+      - PGUSER=postgres
+      - POSTGRES_PASSWORD=difyai123456
+      - POSTGRES_DB=dify
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - type: bind
+        source: /DATA/AppData/Dify/db
+        target: /var/lib/postgresql/data
+    restart: unless-stopped
+    network_mode: bridge
+
+  icewhale-dify-redis:
+    container_name: icewhale-dify-redis
+    image: redis:6-alpine
+    deploy:
+      resources:
+        reservations:
+          memory: "268435456"
+        limits:
+          memory: 1024M
+    volumes:
+      - type: bind
+        source: /DATA/AppData/Dify/redis
+        target: /data
+    command: redis-server --requirepass difyai123456
+    restart: unless-stopped
+    network_mode: bridge
+
+  icewhale-dify-weaviate:
+    container_name: icewhale-dify-weaviate
+    image: semitechnologies/weaviate:1.19.0
+    deploy:
+      resources:
+        reservations:
+          memory: "536870912"
+        limits:
+          memory: 2048M
+    environment:
+      - QUERY_DEFAULTS_LIMIT=25
+      - AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED=false
+      - PERSISTENCE_DATA_PATH=/var/lib/weaviate
+      - DEFAULT_VECTORIZER_MODULE=none
+      - CLUSTER_HOSTNAME=node1
+      - AUTHENTICATION_APIKEY_ENABLED=true
+      - AUTHENTICATION_APIKEY_ALLOWED_KEYS=WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
+      - AUTHENTICATION_APIKEY_USERS=hello@dify.ai
+      - AUTHORIZATION_ADMINLIST_ENABLED=true
+      - AUTHORIZATION_ADMINLIST_USERS=hello@dify.ai
+    volumes:
+      - type: bind
+        source: /DATA/AppData/Dify/weaviate
+        target: /var/lib/weaviate
+    restart: unless-stopped
+    network_mode: bridge
+
+  icewhale-dify-sandbox:
+    container_name: icewhale-dify-sandbox
+    image: langgenius/dify-sandbox:0.2.1
+    deploy:
+      resources:
+        reservations:
+          memory: "268435456"
+        limits:
+          memory: 1024M
+    environment:
+      - API_KEY=dify-sandbox
+      - GIN_MODE=release
+      - WORKER_TIMEOUT=15
+      - ENABLE_NETWORK=true
+      - SANDBOX_PORT=8194
+    volumes:
+      - type: bind
+        source: /DATA/AppData/Dify/sandbox
+        target: /dependencies
+    restart: unless-stopped
+    network_mode: bridge
+
+  icewhale-dify-nginx:
+    container_name: icewhale-dify-nginx
+    image: nginx:latest
+    ports:
+      - target: 80
+        published: "3701"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /DATA/AppData/Dify/nginx
+        target: /etc/nginx/conf.d
+    depends_on:
+      - icewhale-dify-api
+      - icewhale-dify-web
+    restart: unless-stopped
+    network_mode: bridge
+    labels:
+      icon: https://raw.githubusercontent.com/langgenius/dify/main/web/public/logo/logo-site.png
+
+x-casaos:
+  architectures:
+    - amd64
+    - arm64
+  category: AI
+  description:
+    en_us: Dify is an open-source LLM app development platform. It combines AI workflow, RAG pipeline, agent capabilities, model management, observability features and more, letting you quickly go from prototype to production.
+    zh_cn: Dify是一个开源的LLM应用开发平台。它结合了AI工作流、RAG流水线、代理功能、模型管理、可观测性功能等，让您快速从原型到生产。
+    ja_jp: DifyはオープンソースのLLMアプリ開発プラットフォームです。AIワークフロー、RAGパイプライン、エージェント機能、モデル管理、可観測性機能などを組み合わせて、プロトタイプから本番環境まで迅速に移行できます。
+  developer: Dify.ai
+  icon: https://raw.githubusercontent.com/langgenius/dify/main/web/public/logo/logo-site.png
+  index: /
+  is_uncontrolled: false
+  main: icewhale-dify-nginx
+  port_map: "3701"
+  scheme: http
+  screenshot_link:
+    - https://cloud.dify.ai/logo/logo-site.png
+  store_app_id: icewhale-dify
+  tagline:
+    en_us: Open-source LLM App Development Platform
+    zh_cn: 开源LLM应用开发平台
+    ja_jp: オープンソースLLMアプリ開発プラットフォーム
+  title:
+    en_us: Dify
+    custom: ""
+    ja_jp: Dify
+  hostname: ""
+  author: self 
