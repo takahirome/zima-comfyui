@@ -190,7 +190,7 @@ services:
     image: nginx:latest
     ports:
       - target: 80
-        published: "3701"
+        published: "80"
         protocol: tcp
     volumes:
       - type: bind
