@@ -28,6 +28,13 @@ services:
       - WEAVIATE_API_KEY=WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
       - CODE_EXECUTION_ENDPOINT=http://dify-sandbox:8194
       - CODE_EXECUTION_API_KEY=dify-sandbox
+      - PLUGIN_ENABLED=true
+      - PLUGIN_DAEMON_ENDPOINT=http://dify-plugin-daemon:5003
+      - PLUGIN_DAEMON_API_KEY=lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi
+      - PLUGIN_REMOTE_INSTALL_HOST=dify-plugin-daemon
+      - PLUGIN_REMOTE_INSTALL_PORT=5003
+      - PLUGIN_MAX_PACKAGE_SIZE=52428800
+      - INNER_API_KEY_FOR_PLUGIN=QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1
       - MIGRATION_ENABLED=true
       - WEB_API_CORS_ALLOW_ORIGINS=*
       - CONSOLE_CORS_ALLOW_ORIGINS=*
@@ -38,9 +45,12 @@ services:
         source: ~/dify-data/storage
         target: /app/api/storage
     depends_on:
-      - dify-db
-      - dify-redis
-      - dify-weaviate
+      dify-db:
+        condition: service_healthy
+      dify-redis:
+        condition: service_started
+      dify-weaviate:
+        condition: service_started
     restart: unless-stopped
 
   dify-worker:
@@ -69,6 +79,13 @@ services:
       - VECTOR_STORE=weaviate
       - WEAVIATE_ENDPOINT=http://dify-weaviate:8080
       - WEAVIATE_API_KEY=WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih
+      - PLUGIN_ENABLED=true
+      - PLUGIN_DAEMON_ENDPOINT=http://dify-plugin-daemon:5003
+      - PLUGIN_DAEMON_API_KEY=lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi
+      - PLUGIN_REMOTE_INSTALL_HOST=dify-plugin-daemon
+      - PLUGIN_REMOTE_INSTALL_PORT=5003
+      - PLUGIN_MAX_PACKAGE_SIZE=52428800
+      - INNER_API_KEY_FOR_PLUGIN=QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1
       - STORAGE_TYPE=local
       - STORAGE_LOCAL_PATH=storage
     volumes:
@@ -76,9 +93,12 @@ services:
         source: ~/dify-data/storage
         target: /app/api/storage
     depends_on:
-      - dify-db
-      - dify-redis
-      - dify-weaviate
+      dify-db:
+        condition: service_healthy
+      dify-redis:
+        condition: service_started
+      dify-weaviate:
+        condition: service_started
     restart: unless-stopped
 
   dify-web:
@@ -114,6 +134,11 @@ services:
         source: ~/dify-data/db
         target: /var/lib/postgresql/data
     restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-h', 'localhost', '-U', 'postgres', '-d', 'dify']
+      interval: 1s
+      timeout: 3s
+      retries: 60
 
   dify-redis:
     container_name: dify-redis
@@ -130,6 +155,8 @@ services:
         target: /data
     command: redis-server --requirepass difyai123456
     restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
 
   dify-weaviate:
     container_name: dify-weaviate
@@ -176,6 +203,75 @@ services:
       - type: bind
         source: ~/dify-data/sandbox
         target: /dependencies
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8194/health']
+
+  dify-plugin-daemon:
+    container_name: dify-plugin-daemon
+    image: langgenius/dify-plugin-daemon:0.1.2-local
+    ports:
+      - target: 5003
+        published: "5003"
+        protocol: tcp
+    deploy:
+      resources:
+        reservations:
+          memory: "268435456"
+        limits:
+          memory: 1024M
+    environment:
+      - SERVER_PORT=5003
+      - SERVER_KEY=lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi
+      - GIN_MODE=release
+      - PLATFORM=local
+      - DIFY_INNER_API_KEY=QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1
+      - DIFY_INNER_API_URL=http://dify-api:5001
+      - PLUGIN_REMOTE_INSTALLING_ENABLED=true
+      - PLUGIN_REMOTE_INSTALLING_HOST=0.0.0.0
+      - PLUGIN_REMOTE_INSTALLING_PORT=5003
+      - PLUGIN_STORAGE_TYPE=local
+      - PLUGIN_STORAGE_LOCAL_ROOT=/app/storage
+      - PLUGIN_INSTALLED_PATH=plugin
+      - PLUGIN_WORKING_PATH=cwd
+      - PERSISTENCE_STORAGE_PATH=persistence
+      - PERSISTENCE_STORAGE_MAX_SIZE=104857600
+      - PLUGIN_WEBHOOK_ENABLED=true
+      - ROUTINE_POOL_SIZE=1024
+      - REDIS_HOST=dify-redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=difyai123456
+      - REDIS_DB=0
+      - REDIS_USE_SENTINEL=false
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=difyai123456
+      - DB_HOST=dify-db
+      - DB_PORT=5432
+      - DB_DATABASE=dify_plugin
+      - DB_SSL_MODE=disable
+      - DB_MAX_IDLE_CONNS=10
+      - DB_MAX_OPEN_CONNS=30
+      - DB_CONN_MAX_LIFETIME=3600
+      - DIFY_INVOCATION_CONNECTION_IDLE_TIMEOUT=120
+      - MAX_PLUGIN_PACKAGE_SIZE=52428800
+      - PYTHON_ENV_INIT_TIMEOUT=120
+      - PPROF_ENABLED=false
+      - FORCE_VERIFYING_SIGNATURE=false
+      - THIRD_PARTY_SIGNATURE_VERIFICATION_ENABLED=false
+      - MARKETPLACE_ENABLED=true
+      - MARKETPLACE_API_URL=https://marketplace.dify.ai
+      - PLUGIN_STDIO_BUFFER_SIZE=1024
+      - PLUGIN_STDIO_MAX_BUFFER_SIZE=5242880
+      - DIFY_BACKWARDS_INVOCATION_WRITE_TIMEOUT=5000
+      - DIFY_BACKWARDS_INVOCATION_READ_TIMEOUT=240000
+
+    volumes:
+      - type: bind
+        source: ~/dify-data/plugin-daemon
+        target: /app/storage
+    depends_on:
+      dify-db:
+        condition: service_healthy
     restart: unless-stopped
 
   dify-nginx:
