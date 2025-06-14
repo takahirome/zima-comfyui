@@ -221,7 +221,7 @@ services:
         limits:
           memory: 1024M
     environment:
-      - SERVER_PORT=5003
+      - SERVER_PORT=5002
       - SERVER_KEY=lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi
       - GIN_MODE=release
       - PLATFORM=local
