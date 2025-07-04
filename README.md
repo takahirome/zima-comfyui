@@ -1,69 +1,106 @@
-# zima-stable-dock
+# Dify for ZimaOS
 
-このリポジトリは、zimacube にインストールするための Docker 定義ファイルを提供します。
+このプロジェクトは、ZimaOSでDifyを動作させるためのDocker Composeファイルです。
 
 ## 概要
 
-- zimacube 上で Stable Diffusion などの AI モデルを動作させるための Docker 構成ファイルです。
-- `ComfyUI.yaml`および`Stable Diffusion.yaml`が含まれています。
+Difyは、オープンソースのLLMアプリケーション開発プラットフォームです。AIワークフロー、RAGパイプライン、エージェント機能、モデル管理、可観測性機能などを統合し、プロトタイプから本番環境まで迅速に移行できます。
 
-## ファイル説明
+## 必要なシステム要件
 
-- `ComfyUI.yaml`: ComfyUI の Docker 定義ファイル
+- Docker
+- Docker Compose
+- 最低8GB RAM（推奨16GB以上）
+- 10GB以上の空きディスク容量
 
-  - ポート番号: 8188
-  - イメージ: yanwk/comfyui-boot:latest
-  - モデル・出力・カスタムノードの保存先: `/DATA/AppData/ComfyUI/`
-  - 説明: グラフ/ノードインターフェースを備えた強力でモジュール式の Stable Diffusion 用 GUI およびバックエンド
+## セットアップ
 
-- `Stable Diffusion.yaml`: Stable Diffusion の Docker 定義ファイル
-  - ポート番号: 7860
-  - イメージ: johnguan/stable-diffusion-webui:latest
-  - モデル・出力・設定の保存先: `/DATA/AppData/Stable-Diffusion-WebUI/`
-  - 説明: テキストの説明に基づいて詳細な画像を生成するための AI モデル
+1. このリポジトリをクローンまたはダウンロードします：
+   ```bash
+   git clone <repository-url>
+   cd zima-openwebui
+   ```
 
-## システム要件
+2. データディレクトリを作成します：
+   ```bash
+   mkdir -p dify-data/{storage,db,redis,weaviate,sandbox,plugin-daemon}
+   ```
 
-- GPU サポート: NVIDIA GPU 推奨（GPU 環境がない場合は CPU フォールバックあり）
-- メモリ要件: 最低 512MB、推奨 16GB
-- ストレージ: モデルファイル用に十分な空き容量が必要
-- zimacube がインストールされた環境
+3. Docker Composeでサービスを起動します：
+   ```bash
+   docker-compose up -d
+   ```
 
-## 使い方
+4. 初回起動時は、すべてのサービスが立ち上がるまで数分待ちます。
 
-1. 本リポジトリを zimacube 上にクローンまたはファイルをコピーします。
-2. zimacube の管理画面や CLI から、必要な yaml ファイルを指定して Docker コンテナーを起動します。
-3. 詳細設定はこちらを参照
-   1. https://github.com/YanWenKun/ComfyUI-Docker/blob/main/cu121/README.adoc
+## アクセス
 
-例：
+- **Dify Web UI**: http://localhost:3701
+- **Plugin Daemon**: http://localhost:5003
 
-```sh
-# 例: CLIから起動する場合
-docker compose -f ComfyUI.yaml up -d
-docker compose -f Stable Diffusion.yaml up -d
+## サービス構成
+
+- **dify-api**: Dify APIサーバー
+- **dify-worker**: バックグラウンドワーカー
+- **dify-web**: WebUIフロントエンド
+- **dify-db**: PostgreSQLデータベース
+- **dify-redis**: Redisキャッシュ
+- **dify-weaviate**: Weaviateベクターデータベース
+- **dify-sandbox**: コード実行サンドボックス
+- **dify-plugin-daemon**: プラグインデーモン
+- **dify-nginx**: リバースプロキシ
+
+## データの永続化
+
+すべてのデータは `./dify-data/` ディレクトリに保存されます：
+- `storage/`: ファイルストレージ
+- `db/`: PostgreSQLデータ
+- `redis/`: Redisデータ
+- `weaviate/`: Weaviateベクターデータ
+- `sandbox/`: サンドボックス依存関係
+- `plugin-daemon/`: プラグインデータ
+
+## 停止とクリーンアップ
+
+サービスを停止するには：
+```bash
+docker-compose down
 ```
 
-※ 実際の起動方法は zimacube の仕様にしたがってください。
-
-## アクセス方法
-
-- ComfyUI: `http://[zimacubeのIPアドレス]:8188`
-- Stable Diffusion: `http://[zimacubeのIPアドレス]:7860`
+データを含めて完全にクリーンアップするには：
+```bash
+docker-compose down -v
+rm -rf dify-data/
+```
 
 ## トラブルシューティング
 
-- コンテナーが起動しない場合:
-  - GPU ドライバが正しくインストールされているか確認
-  - メモリ不足の可能性がある場合はリソース設定を見直し
-- モデルが読み込めない場合:
-  - ボリューム設定が正しいか確認
-  - 適切なモデルファイルがダウンロードされているか確認
+### メモリ不足エラー
+システムRAMが不足している場合は、`docker-compose.yml`の`deploy.resources.limits.memory`値を調整してください。
 
-## ライセンス
+### ポート競合
+ポート3701または5003が使用中の場合は、`docker-compose.yml`のポート設定を変更してください。
 
-MIT ライセンス (注：実際のライセンスに合わせて修正してください)
+### 初回起動が遅い
+初回起動時は、すべてのDockerイメージのダウンロードと初期化に時間がかかります。ログを確認してください：
+```bash
+docker-compose logs -f
+```
 
-## 貢献について
+## セキュリティ注意事項
 
-バグ報告や機能改善の提案は、Issue またはプルリクエストでお願いします。
+本番環境で使用する場合は、以下の設定を変更してください：
+- `SECRET_KEY`
+- データベースパスワード
+- Redis パスワード
+- Weaviate API キー
+- その他のAPI キー
+
+## サポート
+
+問題が発生した場合は、以下を確認してください：
+1. Dockerとdocker-composeが正しくインストールされているか
+2. 必要なポートが利用可能か
+3. 十分なシステムリソースがあるか
+
+詳細については、[Dify公式ドキュメント](https://docs.dify.ai)を参照してください。

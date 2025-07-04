@@ -8,7 +8,7 @@ services:
         reservations:
           memory: "1073741824"
         limits:
-          memory: 8192M
+          memory: 6144M
     environment:
       - MODE=api
       - LOG_LEVEL=INFO
@@ -42,7 +42,7 @@ services:
       - STORAGE_LOCAL_PATH=storage
     volumes:
       - type: bind
-        source: ~/dify-data/storage
+        source: /DATA/AppData/Dify/storage
         target: /app/api/storage
     depends_on:
       dify-db:
@@ -52,6 +52,8 @@ services:
       dify-weaviate:
         condition: service_started
     restart: unless-stopped
+    network_mode: bridge
+    cpu_shares: 90
 
   dify-worker:
     container_name: dify-worker
@@ -61,7 +63,7 @@ services:
         reservations:
           memory: "1073741824"
         limits:
-          memory: 4096M
+          memory: 3072M
     environment:
       - MODE=worker
       - LOG_LEVEL=INFO
@@ -90,7 +92,7 @@ services:
       - STORAGE_LOCAL_PATH=storage
     volumes:
       - type: bind
-        source: ~/dify-data/storage
+        source: /DATA/AppData/Dify/storage
         target: /app/api/storage
     depends_on:
       dify-db:
@@ -100,6 +102,8 @@ services:
       dify-weaviate:
         condition: service_started
     restart: unless-stopped
+    network_mode: bridge
+    cpu_shares: 90
 
   dify-web:
     container_name: dify-web
@@ -109,11 +113,13 @@ services:
         reservations:
           memory: "536870912"
         limits:
-          memory: 2048M
+          memory: 1536M
     environment:
       - CONSOLE_API_URL=
       - APP_API_URL=
     restart: unless-stopped
+    network_mode: bridge
+    cpu_shares: 90
 
   dify-db:
     container_name: dify-db
@@ -123,7 +129,7 @@ services:
         reservations:
           memory: "536870912"
         limits:
-          memory: 2048M
+          memory: 1536M
     environment:
       - PGUSER=postgres
       - POSTGRES_PASSWORD=difyai123456
@@ -131,9 +137,11 @@ services:
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
       - type: bind
-        source: ~/dify-data/db
+        source: /DATA/AppData/Dify/db
         target: /var/lib/postgresql/data
     restart: unless-stopped
+    network_mode: bridge
+    cpu_shares: 90
     healthcheck:
       test: ['CMD', 'pg_isready', '-h', 'localhost', '-U', 'postgres', '-d', 'dify']
       interval: 1s
@@ -148,13 +156,15 @@ services:
         reservations:
           memory: "268435456"
         limits:
-          memory: 1024M
+          memory: 768M
     volumes:
       - type: bind
-        source: ~/dify-data/redis
+        source: /DATA/AppData/Dify/redis
         target: /data
     command: redis-server --requirepass difyai123456
     restart: unless-stopped
+    network_mode: bridge
+    cpu_shares: 90
     healthcheck:
       test: ['CMD', 'redis-cli', 'ping']
 
@@ -166,7 +176,7 @@ services:
         reservations:
           memory: "536870912"
         limits:
-          memory: 2048M
+          memory: 1536M
     environment:
       - QUERY_DEFAULTS_LIMIT=25
       - AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED=false
@@ -180,9 +190,11 @@ services:
       - AUTHORIZATION_ADMINLIST_USERS=hello@dify.ai
     volumes:
       - type: bind
-        source: ~/dify-data/weaviate
+        source: /DATA/AppData/Dify/weaviate
         target: /var/lib/weaviate
     restart: unless-stopped
+    network_mode: bridge
+    cpu_shares: 90
 
   dify-sandbox:
     container_name: dify-sandbox
@@ -192,7 +204,7 @@ services:
         reservations:
           memory: "268435456"
         limits:
-          memory: 1024M
+          memory: 768M
     environment:
       - API_KEY=dify-sandbox
       - GIN_MODE=release
@@ -201,9 +213,11 @@ services:
       - SANDBOX_PORT=8194
     volumes:
       - type: bind
-        source: ~/dify-data/sandbox
+        source: /DATA/AppData/Dify/sandbox
         target: /dependencies
     restart: unless-stopped
+    network_mode: bridge
+    cpu_shares: 90
     healthcheck:
       test: ['CMD', 'curl', '-f', 'http://localhost:8194/health']
 
@@ -219,7 +233,7 @@ services:
         reservations:
           memory: "268435456"
         limits:
-          memory: 1024M
+          memory: 768M
     environment:
       - SERVER_PORT=5002
       - SERVER_KEY=lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi
@@ -264,15 +278,16 @@ services:
       - PLUGIN_STDIO_MAX_BUFFER_SIZE=5242880
       - DIFY_BACKWARDS_INVOCATION_WRITE_TIMEOUT=5000
       - DIFY_BACKWARDS_INVOCATION_READ_TIMEOUT=240000
-
     volumes:
       - type: bind
-        source: ~/dify-data/plugin-daemon
+        source: /DATA/AppData/Dify/plugin-daemon
         target: /app/storage
     depends_on:
       dify-db:
         condition: service_healthy
     restart: unless-stopped
+    network_mode: bridge
+    cpu_shares: 90
 
   dify-nginx:
     container_name: dify-nginx
@@ -290,6 +305,8 @@ services:
       - dify-api
       - dify-web
     restart: unless-stopped
+    network_mode: bridge
+    cpu_shares: 90
     labels:
       icon: https://raw.githubusercontent.com/langgenius/dify/main/web/public/logo/logo-site.png
 
@@ -321,7 +338,7 @@ x-casaos:
     custom: ""
     ja_jp: Dify
   hostname: ""
-  author: self 
+  author: self
 
 configs:
   nginx_default_conf:
